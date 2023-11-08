@@ -57,7 +57,7 @@ export const onlyExportComponents: TSESLint.RuleModule<
       allowConstantExport = false,
       checkJS = false,
       allowExportNames,
-      allowHook,
+      allowHook = false,
     } = context.options[0] || {};
     const filename = context.getFilename();
     // Skip tests & stories files
