@@ -1,5 +1,5 @@
 {
-  "name": "eslint-plugin-react-refresh",
+  "name": "@mahiro/eslint-plugin-react-refresh",
   "version": "0.4.4",
   "license": "MIT",
   "scripts": {
