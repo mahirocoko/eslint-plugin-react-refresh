@@ -20,6 +20,7 @@ export const onlyExportComponents: TSESLint.RuleModule<
         allowConstantExport?: boolean;
         checkJS?: boolean;
         allowExportNames?: string[];
+        allowHook?: boolean;
       },
     ]
 > = {
@@ -44,6 +45,7 @@ export const onlyExportComponents: TSESLint.RuleModule<
           allowConstantExport: { type: "boolean" },
           checkJS: { type: "boolean" },
           allowExportNames: { type: "array", items: { type: "string" } },
+          allowHook: { type: "boolean" }
         },
         additionalProperties: false,
       },
@@ -55,6 +57,7 @@ export const onlyExportComponents: TSESLint.RuleModule<
       allowConstantExport = false,
       checkJS = false,
       allowExportNames,
+      allowHook,
     } = context.options[0] || {};
     const filename = context.getFilename();
     // Skip tests & stories files
@@ -80,7 +83,7 @@ export const onlyExportComponents: TSESLint.RuleModule<
         const nonComponentExports: TSESTree.BindingName[] = [];
 
         const handleLocalIdentifier = (
-          identifierNode: TSESTree.BindingName,
+          identifierNode: TSESTree.BindingName
         ) => {
           if (identifierNode.type !== "Identifier") return;
           if (possibleReactExportRE.test(identifierNode.name)) {
@@ -91,13 +94,19 @@ export const onlyExportComponents: TSESLint.RuleModule<
         const handleExportIdentifier = (
           identifierNode: TSESTree.BindingName,
           isFunction?: boolean,
-          init?: TSESTree.Expression | null,
+          init?: TSESTree.Expression | null
         ) => {
           if (identifierNode.type !== "Identifier") {
             nonComponentExports.push(identifierNode);
             return;
           }
           if (allowExportNames?.includes(identifierNode.name)) {
+            return;
+          }
+          if (
+            allowHook &&
+            new RegExp(/use([A-Z][a-z0-9]+)+/gm).test(identifierNode.name)
+          ) {
             return;
           }
           if (
@@ -142,7 +151,7 @@ export const onlyExportComponents: TSESLint.RuleModule<
               handleExportIdentifier(
                 variable.id,
                 canBeReactFunctionComponent(variable.init),
-                variable.init,
+                variable.init
               );
             }
           } else if (node.type === "FunctionDeclaration") {

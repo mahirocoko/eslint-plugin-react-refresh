@@ -131,6 +131,11 @@ const valid = [
     code: "export const loader = () => {}; export const meta = { title: 'Home' };",
     options: [{ allowExportNames: ["loader", "meta"] }],
   },
+  {
+    name: "Allow hook name `use*`",
+    code: "export const usePageContext = () => {};",
+    options: [{ allowHook: true }],
+  },
 ];
 
 const invalid = [
@@ -220,6 +225,12 @@ const invalid = [
     name: "Component and export non in allowExportNames",
     code: "export const loader = () => {}; export const Bar = () => {}; export const foo = () => {};",
     options: [{ allowExportNames: ["loader", "meta"] }],
+    errorId: "namedExport",
+  },
+  {
+    name: "export without pattern hook",
+    code: "export const helloPageContext = () => {};",
+    options: [{ allowHook: true }],
     errorId: "namedExport",
   },
 ];
